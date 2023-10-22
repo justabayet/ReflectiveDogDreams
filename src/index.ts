@@ -1,12 +1,9 @@
-import BasicScene from "./BasicScene"
-import TestScene from "./TestScene"
+import CustomScene from "./CustomScene"
 
 // sets up the scene
 // let scene = new BasicScene()
-let scene = new TestScene()
-scene.initialize()
+export const scene = new CustomScene()
 
-// loops updates
 function loop() {
   scene.update()
   scene.camera.updateProjectionMatrix()
@@ -15,5 +12,4 @@ function loop() {
   requestAnimationFrame(loop)
 }
 
-// runs a continuous loop
 loop()

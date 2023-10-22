@@ -44,6 +44,7 @@ export default class TestScene extends THREE.Scene {
   wall: THREE.Mesh = null
   helper: THREE.SpotLightHelper = null
 
+  shadowCube: THREE.Mesh = null
   helperCube: THREE.Mesh = null
 
   /**
@@ -94,7 +95,7 @@ export default class TestScene extends THREE.Scene {
     const spotLight = new THREE.SpotLight(0xFF0000, 1, undefined, undefined, undefined, 1)
     spotLight.castShadow = true
     spotLight.position.set(5, 0, 0)
-    spotLight.lookAt(0, 0, -5)
+    spotLight.lookAt(0, 0, 0)
     spotLight.angle = 0.1
     this.add(spotLight)
     this.add(new THREE.SpotLightHelper(spotLight, 0xff9900))
@@ -124,10 +125,10 @@ export default class TestScene extends THREE.Scene {
 
     let wall = new WallTargetable(geometryWall, new THREE.MeshPhongMaterial())
 
-    let cube1 = new THREE.Mesh(geometry1, material1)
-    cube1.position.set(0, 0, 1)
-    wall.target = cube1
-    wall.add(cube1)
+    // let cube1 = new THREE.Mesh(geometry1, material1)
+    // cube1.position.set(0, 0, 1)
+    // wall.target = cube1
+    // wall.add(cube1)
 
     wall.position.x = 0.69
     wall.position.y = 0
@@ -142,10 +143,10 @@ export default class TestScene extends THREE.Scene {
 
     wall = new WallTargetable(geometryWall, new THREE.MeshPhongMaterial())
 
-    cube1 = new THREE.Mesh(geometry1, material1)
-    cube1.position.set(0, 0, 1)
-    wall.target = cube1
-    wall.add(cube1)
+    // cube1 = new THREE.Mesh(geometry1, material1)
+    // cube1.position.set(0, 0, 1)
+    // wall.target = cube1
+    // wall.add(cube1)
 
     wall.position.x = -0.69
     wall.position.y = 0
@@ -160,10 +161,10 @@ export default class TestScene extends THREE.Scene {
 
 
     wall = new WallTargetable(geometryWall, new THREE.MeshPhongMaterial())
-    cube1 = new THREE.Mesh(geometry1, material1)
-    cube1.position.set(0, 0, 1)
-    wall.target = cube1
-    wall.add(cube1)
+    // cube1 = new THREE.Mesh(geometry1, material1)
+    // cube1.position.set(0, 0, 1)
+    // wall.target = cube1
+    // wall.add(cube1)
     wall.position.x = -0.69
     wall.position.y = 0
     wall.position.z = -0.69
@@ -180,10 +181,10 @@ export default class TestScene extends THREE.Scene {
     wall = new WallTargetable(geometryWall, new THREE.MeshPhongMaterial())
     // wall.material.color = new THREE.Color(0xAAAAFF)
 
-    cube1 = new THREE.Mesh(geometry1, material1)
-    cube1.position.set(0, 0, 1)
-    wall.target = cube1
-    wall.add(cube1)
+    // cube1 = new THREE.Mesh(geometry1, material1)
+    // cube1.position.set(0, 0, 1)
+    // wall.target = cube1
+    // wall.add(cube1)
 
     wall.position.x = 0.69
     wall.position.y = 0
@@ -205,6 +206,7 @@ export default class TestScene extends THREE.Scene {
 
     this.helperCube = new THREE.Mesh(geometry1, material1)
     this.helperCube.position.set(0, 0, 0)
+    // this.helperCube.castShadow = true
     wall.add(this.helperCube)
 
     // const helperCube2 = new THREE.Mesh(geometry1, material1)
@@ -213,7 +215,7 @@ export default class TestScene extends THREE.Scene {
 
 
 
-    this.spotLight3 = new THREE.SpotLight(0x0000FF, 1, undefined, undefined, undefined, 1)
+    this.spotLight3 = new THREE.SpotLight(0x0000FF, 10, undefined, undefined, 0.5, 1)
     this.spotLight3.castShadow = true
 
     this.spotLight3.position.set(0, 0, 0)
@@ -223,11 +225,24 @@ export default class TestScene extends THREE.Scene {
 
 
 
+    const geometryGhost = new THREE.BoxGeometry(0.2, 0.2, 0.2)
+    const materialGhost = new THREE.MeshPhongMaterial({ color: 0xFFFF00, reflectivity: 1, transparent: true, opacity: 0.000001 })
+    this.shadowCube = new THREE.Mesh(geometryGhost, materialGhost)
+    this.shadowCube.castShadow = true
+    this.shadowCube.scale.x = 0.3
+    this.shadowCube.scale.y = 0.3
+    this.shadowCube.scale.z = 0.3
+    console.log(this.shadowCube)
+    wall.add(this.shadowCube)
+
     wall.add(this.spotLight3)
     // wall.add(this.spotLight3.target)
     // wall.rotation.y -= 1
     wall.rotation.y += Math.PI/4
     this.diamond.add(wall)
+    this.diamond.rotateX(10)
+    this.diamond.rotateY(10)
+    this.diamond.rotateZ(10)
     this.wall = wall
 
     // Creates the geometry + materials
@@ -316,7 +331,7 @@ export default class TestScene extends THREE.Scene {
 
 
     if (this.raycaster) {
-      const intersects = this.raycaster.intersectObjects( this.diamond.children );
+      const intersects = this.raycaster.intersectObjects<WallTargetable>( this.diamond.children );
       if(this.lastIntersect) (this.lastIntersect.material as THREE.MeshPhongMaterial).color.set( 0x000000 );
 
       const intersected = intersects[0];
@@ -326,12 +341,16 @@ export default class TestScene extends THREE.Scene {
         this.lastIntersect = (intersected.object as THREE.Mesh)
         // console.log(intersected.point)
         const localePos = this.wall.worldToLocal(intersected.point)
+        // const localeNormal = this.wall.worldToLocal(intersected.normal)
+        // console.log(intersected, localeNormal)
         this.spotLight3.position.set(localePos.x, localePos.y, localePos.z)
         this.helperCube.position.set(localePos.x, localePos.y, localePos.z)
+        this.shadowCube.position.set(localePos.x, localePos.y, localePos.z)
 
         if((this.lastIntersect as WallTargetable).axis) {
           let axis = (this.lastIntersect as WallTargetable).axis
           this.helperCube.position.add(axis)
+          this.shadowCube.position.add(axis.clone().multiplyScalar(2))
         }
 
         this.spotLight3.target = this.helperCube
