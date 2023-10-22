@@ -1,17 +1,19 @@
 const path = require('path');
 
 module.exports = {
-    mode: 'none',
+    mode: 'development',
+    devtool: 'eval-source-map',
     entry: './src/index.ts',
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'public'),
+        publicPath: '/public',
         filename: 'main.js'
     },
     resolve: {
         alias: {
-            three: path.resolve('./node_modules/three')   // <----- Addition
+            three: path.resolve('./node_modules/three')
         },
-        extensions: ['.tsx', '.ts', '.js', '.jsx']
+        extensions: ['.tsx', '.ts', '.js']
     },
     module: {
         rules: [
@@ -20,5 +22,12 @@ module.exports = {
                 exclude: /node_modules/,
             }
         ]
+    },
+    devServer: {
+      static: {
+        directory: path.join(__dirname, 'public'),
+      },
+      port: 9000,
+      hot: true,
     }
 };

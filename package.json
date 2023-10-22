@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "watch": "webpack --watch"
+    "dev": "webpack serve --config ./webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,8 @@
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
     "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
     "dat.gui": "^0.7.9",

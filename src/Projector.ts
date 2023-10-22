@@ -1,7 +1,8 @@
-import { ArrowHelper, ColorRepresentation, Raycaster, SpotLight, Vector3 } from "three";
+import { ColorRepresentation, Raycaster, SpotLight, TextureLoader, Vector3 } from "three";
 import DiamondHalf from "./DiamondHalf";
 import { Updatable } from "./interfaces";
 import Mirror from "./Mirror";
+import { dogTexture } from "./textures";
 
 /**
  * There is one Projector per diamond half.
@@ -17,12 +18,15 @@ export default class Projector extends SpotLight implements Updatable {
 
   private lastReflectingMirror: Mirror = undefined
 
-  constructor(spotlightColor: ColorRepresentation = 0x0000ff, ...args: any[]) {
+  constructor(spotlightColor: ColorRepresentation = 0xffffff, ...args: any[]) {
     super(...args)
 
     this.castShadow = true
 
-    this.reflection = new SpotLight(spotlightColor, 10)
+    this.reflection = new SpotLight(spotlightColor, 100)
+    this.reflection.castShadow = true
+    this.reflection.map = dogTexture
+    this.map = dogTexture
     this.setAngle(0.05)
   }
 
