@@ -1,14 +1,14 @@
-import { ColorRepresentation, Raycaster, SpotLight, TextureLoader, Vector3 } from "three";
-import DiamondHalf from "./DiamondHalf";
-import { Updatable } from "./interfaces";
-import Mirror from "./Mirror";
-import { dogTexture } from "./textures";
+import { ColorRepresentation, Mesh, Raycaster, SpotLight, Vector3 } from "three"
+import DiamondHalf from "./DiamondHalf"
+import { Updatable } from "./interfaces"
+import Mirror from "./Mirror"
+import { getTexture } from "./textures"
 
 /**
  * There is one Projector per diamond half.
  * In real life, there would be one big projector with multiple images in circles.
  */
-export default class Projector extends SpotLight implements Updatable {
+export default class Projector extends Mesh implements Updatable {
   private raycaster: Raycaster
 
   private reflection: SpotLight
@@ -18,29 +18,37 @@ export default class Projector extends SpotLight implements Updatable {
 
   private lastReflectingMirror: Mirror = undefined
 
-  constructor(spotlightColor: ColorRepresentation = 0xffffff, ...args: any[]) {
-    super(...args)
+  constructor(spotlightColor: ColorRepresentation = 0xffffff, color?: ColorRepresentation, intensity?: number, distance?: number, angle?: number, penumbra?: number, decay?: number) {
+    if(!color) {
+      color = spotlightColor
+    }
 
-    this.castShadow = true
+    super()
+    // super(color, intensity, distance, angle, penumbra, decay)
 
-    this.reflection = new SpotLight(spotlightColor, 100)
-    this.reflection.castShadow = true
-    this.reflection.map = dogTexture
-    this.map = dogTexture
-    this.setAngle(0.05)
+    // this.castShadow = true
+
+
+    this.reflection = new SpotLight(spotlightColor, 3, undefined, undefined, 0.2, 0)
+    this.reflection.position.set(0, 0, 0)
+    // this.reflection.castShadow = true
+    this.reflection.map = getTexture()
+    // this.reflection.map = dogTexture
+    // this.map = texture
+    this.setAngle(0.2)
   }
 
-  public update() {
-    this.updateLight()
+  public update(delta: number) {
+    this.updateLight(delta)
   }
 
   public setAngle(angle: number) {
-    this.angle = angle
-    this.reflection.angle = this.angle
+    // this.angle = angle / 5
+    this.reflection.angle = angle
   }
 
   setTarget(diamondHalf: DiamondHalf, offset?: Vector3) {
-    this.target = diamondHalf
+    // this.target = diamondHalf
     this.objectTarget = diamondHalf
 
     const position = new Vector3()
@@ -50,6 +58,8 @@ export default class Projector extends SpotLight implements Updatable {
     diamondHalf.getWorldPosition(targetPosition)
 
     const delta = targetPosition.clone().sub(position)
+
+    // this.distance = position.distanceTo(targetPosition) + 1
 
     this.raycaster = new Raycaster(position, delta)
 
@@ -61,7 +71,7 @@ export default class Projector extends SpotLight implements Updatable {
     // this.lookAt(pointTarget)
   }
 
-  updateLight() {
+  updateLight(delta: number) {
     const position = new Vector3()
     this.getWorldPosition(position)
 

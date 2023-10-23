@@ -1,5 +1,5 @@
-import { ColorRepresentation, DoubleSide, Mesh, MeshPhongMaterial, Shape, ShapeGeometry } from "three";
-import { Updatable } from "./interfaces";
+import { ColorRepresentation, DoubleSide, Mesh, MeshPhongMaterial, Shape, ShapeGeometry } from "three"
+import { Updatable } from "./interfaces"
 
 
 export default class TriangleMesh extends Mesh implements Updatable {
@@ -23,5 +23,5 @@ export default class TriangleMesh extends Mesh implements Updatable {
     super(triangleGeometry, material)
   }
 
-  update() {}
+  update(delta: number) {}
 }

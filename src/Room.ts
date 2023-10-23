@@ -1,8 +1,9 @@
-import { DoubleSide, Mesh, MeshPhongMaterial, Object3D, Plane, PlaneGeometry, Shape, ShapeGeometry, SpotLight, Triangle, Vector3 } from "three";
-import Diamond from "./Diamond";
-import Projector from "./Projector";
-import Wall from "./Wall";
-import { Direction, Updatable } from "./interfaces";
+import { Object3D, PointLight, Vector3 } from "three"
+import Diamond from "./Diamond"
+import Projector from "./Projector"
+import Wall from "./Wall"
+import { Updatable } from "./interfaces"
+import { palette } from "./textures"
 
 
 export default class Room extends Object3D implements Updatable {
@@ -13,64 +14,84 @@ export default class Room extends Object3D implements Updatable {
   constructor() {
     super()
 
+    const wallWidth = 10
+    const wallHeight = 15
+
     for(let i = 0; i < 4; i++) {
-      const wall = new Wall(14, 6, 7, i)
+      const wall = new Wall(wallWidth, wallHeight, wallWidth/2, i)
       this.walls.push(wall)
       this.add(wall)
     }
 
-    const diamond =  new Diamond(1)
-    this.add(diamond)
-    diamond.position.set(1, 0, 1)
-    this.diamonds.push(diamond)
+    const ceilling = new Wall(wallWidth, wallWidth, 0, 0)
+    ceilling.mesh.position.y = wallHeight / 2 - wallWidth / 4
+    ceilling.mesh.rotation.y = 0
+    ceilling.mesh.rotation.x = Math.PI/2
+    this.add(ceilling)
 
-    const projo = new Projector(0x00FF00, 0x00FF00, 10)
-    projo.position.set(4, 0.7, 2)
-    this.projectors.push(projo)
-    this.add(projo)
-    projo.setTarget(diamond.upperHalf)
+    const floor = new Wall(wallWidth, wallWidth, 0, 0)
+    floor.mesh.position.y =  -5
+    floor.mesh.rotation.y = 0
+    floor.mesh.rotation.x = Math.PI/2
+    this.add(floor)
 
-    const projo2 = new Projector(0xFF0000, 0xFF0000, 10)
-    projo2.position.set(4, -0.7, 2)
-    this.projectors.push(projo2)
-    this.add(projo2)
-    projo2.setTarget(diamond.lowerHalf)
+    const pointLight = new PointLight(palette.BRIGHT, 1, undefined, 0.5)
+    pointLight.position.set(0, 0.5, 0)
+    this.add(pointLight)
 
-    const diamond2 =  new Diamond()
-    this.add(diamond2)
-    diamond2.reverseRotation = true
-    diamond2.position.set(-1, 0, 1)
-    this.diamonds.push(diamond2)
+    const pointLight2 = new PointLight(palette.BRIGHT, 1, undefined, 5)
+    pointLight2.position.set(1, 0.5, 1)
+    this.add(pointLight2)
 
-    const projo3 = new Projector(0x0000FF, 0x0000FF, 10)
-    projo3.position.set(-2, -0.1, 5)
-    projo3.setAngle(0.2)
-    this.projectors.push(projo3)
-    this.add(projo3)
-    projo3.setTarget(diamond2.lowerHalf)
+    const pointLight3 = pointLight2.clone()
+    pointLight3.position.set(-1, 0.5, -1)
+    this.add(pointLight3)
 
+    const pointLight4 = pointLight2.clone()
+    pointLight4.position.set(1, 0.5, -1)
+    this.add(pointLight4)
 
-    // Diamond
-    // const point = Diamond.getPointInUpperWalls()
+    const pointLight5 = pointLight2.clone()
+    pointLight5.position.set(-1, 0.5, 1)
+    this.add(pointLight5)
 
-    // Projector
-    // Projector.setTarget(diamond.upperHalf, new Vector(0, 0, 0.1))
+    const NB_DIAMONDS = 7
 
+    const axisY = new Vector3(0, 1, 0)
 
+    const heightRange = 1
+    const clusterRadius = 0.4
 
-    const spotLight = new SpotLight(0xFF0000, 1, undefined, undefined, undefined, 1)
-    spotLight.castShadow = true
-    spotLight.position.set(-5, 3, 3)
-    spotLight.lookAt(0, 0, 0)
-    spotLight.angle = 1
-    this.add(spotLight)
+    const diamondSize = 0.3
+
+    for(let i = 0; i < NB_DIAMONDS; i++) {
+
+      const angle = i * ( 2 * Math.PI / NB_DIAMONDS )
+
+      const y = Math.random() * heightRange
+      const z = clusterRadius
+
+      const diamondPosition = new Vector3(0, y, z).applyAxisAngle(axisY, angle)
+      const projoPosition = new Vector3(0, y + 0.5, z + 2).applyAxisAngle(axisY, angle)
+
+      const diamond =  new Diamond(diamondSize, palette.DARK)
+      this.add(diamond)
+      diamond.position.copy(diamondPosition)
+      this.diamonds.push(diamond)
+
+      const projo = new Projector(palette.BRIGHT, undefined, 100)
+      projo.position.copy(projoPosition)
+      this.projectors.push(projo)
+      this.add(projo)
+      projo.setTarget(diamond.upperHalf)
+    }
   }
 
-  public update(): void {
-    this.diamonds.forEach(diamond => diamond.update())
-    this.projectors.forEach(projector => projector.update())
-    this.walls.forEach(wall => wall.update())
+  public update(delta: number): void {
+    this.diamonds.forEach(diamond => diamond.update(delta))
+    this.projectors.forEach(projector => projector.update(delta))
+    this.walls.forEach(wall => wall.update(delta))
 
-    this.projectors.forEach(projector => projector.updateLight())
+    this.projectors.forEach(projector => projector.updateLight(delta))
   }
 }

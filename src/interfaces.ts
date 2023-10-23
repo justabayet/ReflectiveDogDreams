@@ -1,5 +1,5 @@
 export interface Updatable {
-  update: () => void
+  update: (delta: number) => void
 }
 
 export enum Direction {

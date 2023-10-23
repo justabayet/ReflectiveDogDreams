@@ -1,6 +1,5 @@
-import { BoxGeometry, Mesh, MeshPhongMaterial, Object3D } from "three";
-import { Direction, Updatable } from "./interfaces";
-
+import { BoxGeometry, Mesh, MeshPhongMaterial, Object3D } from "three"
+import { Direction, Updatable } from "./interfaces"
 
 
 export default class Wall extends Object3D implements Updatable {
@@ -8,7 +7,7 @@ export default class Wall extends Object3D implements Updatable {
   private height: number
   private distance: number
   private direction: Direction
-  private mesh: Mesh
+  public mesh: Mesh
 
   constructor(width: number, height: number, distance: number, direction: Direction ) {
     super()
@@ -37,5 +36,5 @@ export default class Wall extends Object3D implements Updatable {
 
   }
 
-  public update() {}
+  public update(delta: number) {}
 }

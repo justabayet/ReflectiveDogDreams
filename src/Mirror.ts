@@ -1,6 +1,6 @@
-import { ColorRepresentation, Intersection, Object3D, SpotLight, Vector3 } from "three";
-import { Direction, Updatable } from "./interfaces";
-import TriangleMesh from "./TriangleMesh";
+import { ColorRepresentation, Intersection, Object3D, SpotLight, Vector3 } from "three"
+import { Direction, Updatable } from "./interfaces"
+import TriangleMesh from "./TriangleMesh"
 
 
 export default class Mirror extends TriangleMesh implements Updatable  {
@@ -13,9 +13,6 @@ export default class Mirror extends TriangleMesh implements Updatable  {
 
   constructor(size: number = 2, direction: Direction, color: ColorRepresentation = 0xff9900) {
     super(size, color)
-
-    this.castShadow = true
-    this.receiveShadow = true
 
     this.exposition = direction
 
@@ -46,6 +43,7 @@ export default class Mirror extends TriangleMesh implements Updatable  {
     this.projoReflected = projector
 
     this.projoReflected.target = this.targetReflection
+    // this.projoReflected.position.x -= 0.1
     this.helperIntersection.add(this.projoReflected)
   }
 
@@ -57,10 +55,11 @@ export default class Mirror extends TriangleMesh implements Updatable  {
   public updateReflection(intersection: Intersection<Mirror>, projectorPosition: Vector3) {
     const projectorPositionLocal = this.worldToLocal(projectorPosition.clone())
 
-    const intersectionPosition = this.worldToLocal(intersection.point)
+    const intersectionPosition = this.worldToLocal(intersection.point.clone())
     this.helperIntersection.position.copy(intersectionPosition)
 
     this.targetReflection.position.copy(projectorPositionLocal)
     this.targetReflection.position.x *= -1
+    // this.targetReflection.position.y *= -1
   }
 }

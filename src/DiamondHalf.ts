@@ -1,6 +1,6 @@
-import { ColorRepresentation, DoubleSide, Mesh, MeshPhongMaterial, Object3D, Shape, ShapeGeometry } from "three";
-import Mirror from "./Mirror";
-import { Direction, Updatable } from "./interfaces";
+import { ColorRepresentation, Object3D } from "three"
+import Mirror from "./Mirror"
+import { Updatable } from "./interfaces"
 
 
 export default class DiamondHalf extends Object3D implements Updatable {
@@ -20,5 +20,5 @@ export default class DiamondHalf extends Object3D implements Updatable {
     return this.mirrors
   }
 
-  public update() {}
+  public update(delta: number) {}
 }
