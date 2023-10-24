@@ -1,8 +1,8 @@
-import { ColorRepresentation, Mesh, Raycaster, SpotLight, Vector3 } from "three"
+import { BoxGeometry, ColorRepresentation, Mesh, MeshPhongMaterial, Raycaster, SpotLight, Vector3 } from "three"
 import DiamondHalf from "./DiamondHalf"
 import { Updatable } from "./interfaces"
 import Mirror from "./Mirror"
-import { getTexture } from "./const"
+import { debugReflection, getTexture } from "./const"
 
 /**
  * There is one Projector per diamond half.
@@ -30,6 +30,13 @@ export default class Projector extends Mesh implements Updatable {
 
     this.reflection.map = getTexture()
     this.setAngle(0.3)
+
+    if(debugReflection) {
+      const geometry = new BoxGeometry(0.04, 0.04, 0.04)
+      const material = new MeshPhongMaterial({ color: 0x0000FF })
+      const projoMesh = new Mesh(geometry, material)
+      this.add(projoMesh)
+    }
   }
 
   public update(delta: number) {

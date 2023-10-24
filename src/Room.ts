@@ -1,18 +1,31 @@
-import { BoxGeometry, Mesh, MeshPhongMaterial, Object3D, PointLight, Vector3 } from "three"
+import { Object3D, PointLight, Vector3 } from "three"
 import Diamond from "./Diamond"
 import Projector from "./Projector"
 import Wall from "./Wall"
 import { Updatable } from "./interfaces"
-import { debugReflection, palette } from "./const"
+import { palette } from "./const"
+import Performance from "./Performance"
 
-
+const NB_DIAMONDS_MAX = 10
+const AXIS_Y = new Vector3(0, 1, 0)
 export default class Room extends Object3D implements Updatable {
   private diamonds: Diamond[] = []
   private projectors: Projector[] = []
   private walls: Wall[] = []
 
+  private nbDiamond: number = 1
+
+  private performance: Performance
+
+  private HEIGHT_RANGE = 1
+  private CLUSTER_RADIUS = 0.4
+
+  private DIAMOND_SIZE = 0.3
+
   constructor() {
     super()
+
+    this.performance = new Performance()
 
     const wallWidth = 10
     const wallHeight = 15
@@ -38,48 +51,47 @@ export default class Room extends Object3D implements Updatable {
     const pointLight = new PointLight(palette.BRIGHT, 0.5, undefined, 1)
     pointLight.position.set(0, 0.5, 0)
     this.add(pointLight)
+  }
 
-    const NB_DIAMONDS = 5
+  private addDiamond() {
+    const angle = this.nbDiamond * ( 2 * Math.PI / NB_DIAMONDS_MAX )
 
-    const axisY = new Vector3(0, 1, 0)
+    const y = Math.random() * this.HEIGHT_RANGE
+    const z = this.CLUSTER_RADIUS
 
-    const heightRange = 1
-    const clusterRadius = 0.4
+    const diamondPosition = new Vector3(0, y, z).applyAxisAngle(AXIS_Y, angle)
+    const projoPosition = new Vector3(0, y + 2, z + 2).applyAxisAngle(AXIS_Y, angle)
 
-    const diamondSize = 0.3
+    const diamond =  new Diamond(this.DIAMOND_SIZE, palette.DARK)
+    this.add(diamond)
+    diamond.position.copy(diamondPosition)
+    this.diamonds.push(diamond)
 
-    for(let i = 0; i < NB_DIAMONDS; i++) {
+    const projo = new Projector(palette.BRIGHT, undefined, 100)
+    projo.position.copy(projoPosition)
+    this.projectors.push(projo)
+    this.add(projo)
+    projo.setTarget(diamond.upperHalf)
 
-      const angle = i * ( 2 * Math.PI / NB_DIAMONDS )
+    this.nbDiamond += 1
+  }
 
-      const y = Math.random() * heightRange
-      const z = clusterRadius
+  private popDiamond() {
+    this.projectors.pop().removeFromParent()
+    this.diamonds.pop().removeFromParent()
 
-      const diamondPosition = new Vector3(0, y, z).applyAxisAngle(axisY, angle)
-      const projoPosition = new Vector3(0, y + 2, z + 2).applyAxisAngle(axisY, angle)
-
-      const diamond =  new Diamond(diamondSize, palette.DARK)
-      this.add(diamond)
-      diamond.position.copy(diamondPosition)
-      this.diamonds.push(diamond)
-
-      const projo = new Projector(palette.BRIGHT, undefined, 100)
-      projo.position.copy(projoPosition)
-      this.projectors.push(projo)
-      this.add(projo)
-      projo.setTarget(diamond.upperHalf)
-
-      if(debugReflection) {
-        const geometry = new BoxGeometry(0.04, 0.04, 0.04)
-        const material = new MeshPhongMaterial({ color: 0x0000FF })
-        const projoMesh = new Mesh(geometry, material)
-        projoMesh.position.copy(projoPosition)
-        this.add(projoMesh)
-      }
-    }
+    this.nbDiamond -= 1
   }
 
   public update(delta: number): void {
+    if(!this.performance.isSettled){
+      const hasDegradated = this.performance.update(delta)
+
+      if(typeof hasDegradated !== 'undefined') {
+        hasDegradated ? this.popDiamond() : this.addDiamond()
+      }
+    }
+
     this.diamonds.forEach(diamond => diamond.update(delta))
     this.projectors.forEach(projector => projector.update(delta))
     this.walls.forEach(wall => wall.update(delta))
