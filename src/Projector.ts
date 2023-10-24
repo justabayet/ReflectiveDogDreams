@@ -2,7 +2,7 @@ import { ColorRepresentation, Mesh, Raycaster, SpotLight, Vector3 } from "three"
 import DiamondHalf from "./DiamondHalf"
 import { Updatable } from "./interfaces"
 import Mirror from "./Mirror"
-import { getTexture } from "./textures"
+import { getTexture } from "./const"
 
 /**
  * There is one Projector per diamond half.
@@ -31,11 +31,12 @@ export default class Projector extends Mesh implements Updatable {
 
     this.reflection = new SpotLight(spotlightColor, 3, undefined, undefined, 0.2, 0)
     this.reflection.position.set(0, 0, 0)
+
     // this.reflection.castShadow = true
     this.reflection.map = getTexture()
     // this.reflection.map = dogTexture
     // this.map = texture
-    this.setAngle(0.2)
+    this.setAngle(0.3)
   }
 
   public update(delta: number) {

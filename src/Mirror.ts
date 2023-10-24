@@ -1,11 +1,15 @@
-import { ColorRepresentation, Intersection, Object3D, SpotLight, Vector3 } from "three"
+import { BoxGeometry, ColorRepresentation, Intersection, Mesh, MeshPhongMaterial, Object3D, SpotLight, Vector3 } from "three"
 import { Direction, Updatable } from "./interfaces"
 import TriangleMesh from "./TriangleMesh"
+import { debugReflection } from "./const"
 
 
 export default class Mirror extends TriangleMesh implements Updatable  {
   private helperIntersection: Object3D
   private targetReflection: Object3D
+
+  private meshProjoReflected: Mesh
+  private meshTargetProjoReflected: Mesh
 
   private projoReflected?: SpotLight
 
@@ -29,6 +33,13 @@ export default class Mirror extends TriangleMesh implements Updatable  {
     this.targetReflection = new Object3D()
 
     this.helperIntersection.add(this.targetReflection)
+
+    if (debugReflection) {
+      const geometry = new BoxGeometry(0.04, 0.04, 0.04)
+      const material = new MeshPhongMaterial({ color: 0xFF0000 })
+      this.meshTargetProjoReflected = new Mesh(geometry, material)
+      this.helperIntersection.add(this.meshTargetProjoReflected)
+    }
   }
 
   public hasProjo(): boolean {
@@ -41,13 +52,20 @@ export default class Mirror extends TriangleMesh implements Updatable  {
     }
 
     this.projoReflected = projector
-
     this.projoReflected.target = this.targetReflection
-    // this.projoReflected.position.x -= 0.1
     this.helperIntersection.add(this.projoReflected)
+
+    if(debugReflection) {
+      const geometry = new BoxGeometry(0.04, 0.04, 0.04)
+      const material = new MeshPhongMaterial()
+      this.meshProjoReflected = new Mesh(geometry, material)
+
+      this.helperIntersection.add(this.meshProjoReflected)
+    }
   }
 
   public removeProjo() {
+    if(debugReflection) this.helperIntersection.remove(this.meshProjoReflected)
     this.helperIntersection.remove(this.projoReflected)
     this.projoReflected = undefined
   }
@@ -60,6 +78,8 @@ export default class Mirror extends TriangleMesh implements Updatable  {
 
     this.targetReflection.position.copy(projectorPositionLocal)
     this.targetReflection.position.x *= -1
-    // this.targetReflection.position.y *= -1
+    this.targetReflection.position.y *= -1
+
+    if(debugReflection) this.meshTargetProjoReflected.position.copy(this.targetReflection.position)
   }
 }

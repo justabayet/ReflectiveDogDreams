@@ -1,9 +1,9 @@
-import { Object3D, PointLight, Vector3 } from "three"
+import { BoxGeometry, Mesh, MeshPhongMaterial, Object3D, PointLight, Vector3 } from "three"
 import Diamond from "./Diamond"
 import Projector from "./Projector"
 import Wall from "./Wall"
 import { Updatable } from "./interfaces"
-import { palette } from "./textures"
+import { debugReflection, palette } from "./const"
 
 
 export default class Room extends Object3D implements Updatable {
@@ -39,23 +39,7 @@ export default class Room extends Object3D implements Updatable {
     pointLight.position.set(0, 0.5, 0)
     this.add(pointLight)
 
-    const pointLight2 = new PointLight(palette.BRIGHT, 1, undefined, 5)
-    pointLight2.position.set(1, 0.5, 1)
-    this.add(pointLight2)
-
-    const pointLight3 = pointLight2.clone()
-    pointLight3.position.set(-1, 0.5, -1)
-    this.add(pointLight3)
-
-    const pointLight4 = pointLight2.clone()
-    pointLight4.position.set(1, 0.5, -1)
-    this.add(pointLight4)
-
-    const pointLight5 = pointLight2.clone()
-    pointLight5.position.set(-1, 0.5, 1)
-    this.add(pointLight5)
-
-    const NB_DIAMONDS = 7
+    const NB_DIAMONDS = 5
 
     const axisY = new Vector3(0, 1, 0)
 
@@ -72,7 +56,7 @@ export default class Room extends Object3D implements Updatable {
       const z = clusterRadius
 
       const diamondPosition = new Vector3(0, y, z).applyAxisAngle(axisY, angle)
-      const projoPosition = new Vector3(0, y + 0.5, z + 2).applyAxisAngle(axisY, angle)
+      const projoPosition = new Vector3(0, y + 2, z + 2).applyAxisAngle(axisY, angle)
 
       const diamond =  new Diamond(diamondSize, palette.DARK)
       this.add(diamond)
@@ -84,6 +68,14 @@ export default class Room extends Object3D implements Updatable {
       this.projectors.push(projo)
       this.add(projo)
       projo.setTarget(diamond.upperHalf)
+
+      if(debugReflection) {
+        const geometry = new BoxGeometry(0.04, 0.04, 0.04)
+        const material = new MeshPhongMaterial({ color: 0x0000FF })
+        const projoMesh = new Mesh(geometry, material)
+        projoMesh.position.copy(projoPosition)
+        this.add(projoMesh)
+      }
     }
   }
 

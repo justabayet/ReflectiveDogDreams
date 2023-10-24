@@ -26,3 +26,5 @@ export const palette = {
   DARK: 0x7a5a5a,
   // DARK: 0x1F1717,
 }
+
+export const debugReflection = false
