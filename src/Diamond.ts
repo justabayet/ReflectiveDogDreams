@@ -1,4 +1,4 @@
-import { ColorRepresentation, Object3D } from "three"
+import { BufferGeometry, ColorRepresentation, Line, LineBasicMaterial, Object3D, Vector3 } from "three"
 import DiamondHalf from "./DiamondHalf"
 import { Updatable } from "./interfaces"
 
@@ -26,6 +26,16 @@ export default class Diamond extends Object3D implements Updatable {
     this.lowerHalf = new DiamondHalf(size, color)
     this.add(this.lowerHalf)
     this.lowerHalf.rotateX(Math.PI)
+
+    const material = new LineBasicMaterial( { color: 0x000000 } )
+    const points = []
+    points.push( new Vector3( 0, 0, 0 ) )
+    points.push( new Vector3( 0, 10, 0 ) )
+
+    const geometry = new BufferGeometry().setFromPoints( points )
+    const line = new Line( geometry, material )
+
+    this.add(line)
   }
 
   public update(delta: number) {
