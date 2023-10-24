@@ -24,23 +24,16 @@ export default class Projector extends Mesh implements Updatable {
     }
 
     super()
-    // super(color, intensity, distance, angle, penumbra, decay)
 
-    // this.castShadow = true
-
-
-    this.reflection = new SpotLight(spotlightColor, 3, undefined, undefined, 0.2, 0)
+    this.reflection = new SpotLight(spotlightColor, 2, undefined, undefined, 0.2, 0)
     this.reflection.position.set(0, 0, 0)
 
-    // this.reflection.castShadow = true
     this.reflection.map = getTexture()
-    // this.reflection.map = dogTexture
-    // this.map = texture
     this.setAngle(0.3)
   }
 
   public update(delta: number) {
-    this.updateLight(delta)
+    this.updateLight()
   }
 
   public setAngle(angle: number) {
@@ -72,7 +65,7 @@ export default class Projector extends Mesh implements Updatable {
     // this.lookAt(pointTarget)
   }
 
-  updateLight(delta: number) {
+  updateLight() {
     const position = new Vector3()
     this.getWorldPosition(position)
 

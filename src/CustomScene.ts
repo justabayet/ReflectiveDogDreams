@@ -50,9 +50,6 @@ export default class CustomScene extends Scene {
 
     this.background = new Color(0x000000)
 
-    const ambient = new AmbientLight(0xFFFFFF, 0.1)
-    this.add(ambient)
-
     const room = new Room()
     this.rooms.push(room)
     this.add(room)

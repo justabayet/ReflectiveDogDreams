@@ -35,7 +35,7 @@ export default class Room extends Object3D implements Updatable {
     floor.mesh.rotation.x = Math.PI/2
     this.add(floor)
 
-    const pointLight = new PointLight(palette.BRIGHT, 1, undefined, 0.5)
+    const pointLight = new PointLight(palette.BRIGHT, 0.5, undefined, 1)
     pointLight.position.set(0, 0.5, 0)
     this.add(pointLight)
 
@@ -84,6 +84,6 @@ export default class Room extends Object3D implements Updatable {
     this.projectors.forEach(projector => projector.update(delta))
     this.walls.forEach(wall => wall.update(delta))
 
-    this.projectors.forEach(projector => projector.updateLight(delta))
+    this.projectors.forEach(projector => projector.updateLight())
   }
 }
