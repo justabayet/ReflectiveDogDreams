@@ -1,6 +1,6 @@
-import { AmbientLight, AxesHelper, Color, GridHelper, Object3D, PCFSoftShadowMap, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three"
+import { AxesHelper, Color, GridHelper, Object3D, PCFSoftShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from "three"
 import Room from "./Room"
-import { ControlManager, PLUGIN_KEYS, FirstPersonPlugin, GyroscopePlugin, type Orientation } from 'immersive-controls'
+import { ControlManager, PLUGIN_KEYS, FirstPersonPlugin, GyroscopePlugin } from 'immersive-controls'
 
 
 function setupControlManager (camera: PerspectiveCamera, canvas: HTMLCanvasElement): ControlManager {

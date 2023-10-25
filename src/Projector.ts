@@ -2,7 +2,7 @@ import { BoxGeometry, ColorRepresentation, Mesh, MeshPhongMaterial, Raycaster, S
 import DiamondHalf from "./DiamondHalf"
 import { Updatable } from "./interfaces"
 import Mirror from "./Mirror"
-import { debugReflection, getTexture } from "./const"
+import { ANGLE_MAX, ANGLE_MIN, debugReflection, getTexture, palette } from "./const"
 
 /**
  * There is one Projector per diamond half.
@@ -18,19 +18,22 @@ export default class Projector extends Mesh implements Updatable {
 
   private lastReflectingMirror: Mirror = undefined
 
-  constructor(spotlightColor: ColorRepresentation = 0xffffff, color?: ColorRepresentation, intensity?: number, distance?: number, angle?: number, penumbra?: number, decay?: number) {
+  constructor(spotlightColor: ColorRepresentation = 0xffffff, color?: ColorRepresentation, intensity?: number, distance?: number, _?: number, penumbra?: number, decay?: number) {
     if(!color) {
       color = spotlightColor
     }
 
     super()
 
-    this.reflection = new SpotLight(spotlightColor, 2, undefined, undefined, 0.2, 0)
+    this.reflection = new SpotLight(palette.BRIGHT, 1, undefined, undefined, 0.8, 0)
     this.reflection.position.set(0, 0, 0)
 
 
     this.reflection.map = getTexture()
-    this.setAngle(0.3)
+
+    const angleVariance = ANGLE_MAX - ANGLE_MIN
+    const angle = ANGLE_MIN + (angleVariance * Math.random())
+    this.setAngle(angle)
 
     if(debugReflection) {
       const geometry = new BoxGeometry(0.04, 0.04, 0.04)

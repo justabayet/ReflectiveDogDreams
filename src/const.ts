@@ -28,3 +28,6 @@ export const palette = {
 }
 
 export const debugReflection = false
+
+export const ANGLE_MIN = 0.2
+export const ANGLE_MAX = 0.3
