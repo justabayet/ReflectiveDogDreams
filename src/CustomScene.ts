@@ -8,19 +8,7 @@ function setupControlManager (camera: PerspectiveCamera, canvas: HTMLCanvasEleme
 
   const firstPersonPlugin = new FirstPersonPlugin(camera, canvas)
 
-  const onGyroAvailable = (): void => {
-    controlManager.addPlugin(gyroscopePlugin)
-    controlManager.enableControl(PLUGIN_KEYS.gyroscopeControls)
-
-    setTimeout(() => {
-      controlManager.updateOffset()
-    }, 1000)
-  }
-
-  const gyroscopePlugin = new GyroscopePlugin(camera, onGyroAvailable)
-
   controlManager.addPlugin(firstPersonPlugin)
-  gyroscopePlugin.inertiaFactor = 0.7
   firstPersonPlugin.inertiaFactor = 0.3
   firstPersonPlugin.rotateSpeed = 0.4
 
