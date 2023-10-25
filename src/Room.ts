@@ -18,7 +18,7 @@ export default class Room extends Object3D implements Updatable {
   private performance: Performance
 
   private HEIGHT_RANGE = 3
-  private CLUSTER_RADIUS = 0.4
+  private CLUSTER_RADIUS = 0.6
 
   private DIAMOND_SIZE = 0.3
 
@@ -54,14 +54,14 @@ export default class Room extends Object3D implements Updatable {
   }
 
   private addDiamond() {
-    const angle = this.nbDiamond * ( 2 * Math.PI / (NB_DIAMONDS_MAX) )
-    const factor = - this.nbDiamond % 2
+    const factor = (this.nbDiamond + 1) % 2
+    const angle = ((this.nbDiamond * ( 2 * Math.PI / (NB_DIAMONDS_MAX) )) / (factor + 1)) + (Math.PI * factor)
 
     const y = Math.random() * this.HEIGHT_RANGE
     const z = this.CLUSTER_RADIUS
 
-    const diamondPosition = new Vector3(0, y, z).applyAxisAngle(AXIS_Y, angle + Math.PI * factor)
-    const projoPosition = new Vector3(0, y + 2, z + 2).applyAxisAngle(AXIS_Y, angle + Math.PI * factor)
+    const diamondPosition = new Vector3(0, y, z).applyAxisAngle(AXIS_Y, angle)
+    const projoPosition = new Vector3(0, y + 2, z + 2).applyAxisAngle(AXIS_Y, angle)
 
     const diamond =  new Diamond(this.DIAMOND_SIZE, palette.DARK)
     this.add(diamond)
