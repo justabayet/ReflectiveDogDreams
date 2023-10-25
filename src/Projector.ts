@@ -28,6 +28,7 @@ export default class Projector extends Mesh implements Updatable {
     this.reflection = new SpotLight(spotlightColor, 2, undefined, undefined, 0.2, 0)
     this.reflection.position.set(0, 0, 0)
 
+
     this.reflection.map = getTexture()
     this.setAngle(0.3)
 

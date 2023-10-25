@@ -1,6 +1,31 @@
 import { AmbientLight, AxesHelper, Color, GridHelper, Object3D, PCFSoftShadowMap, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three"
 import Room from "./Room"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { ControlManager, PLUGIN_KEYS, FirstPersonPlugin, GyroscopePlugin, type Orientation } from 'immersive-controls'
+
+
+function setupControlManager (camera: PerspectiveCamera, canvas: HTMLCanvasElement): ControlManager {
+  const controlManager = new ControlManager()
+
+  const firstPersonPlugin = new FirstPersonPlugin(camera, canvas)
+
+  const onGyroAvailable = (): void => {
+    controlManager.addPlugin(gyroscopePlugin)
+    controlManager.enableControl(PLUGIN_KEYS.gyroscopeControls)
+
+    setTimeout(() => {
+      controlManager.updateOffset()
+    }, 1000)
+  }
+
+  const gyroscopePlugin = new GyroscopePlugin(camera, onGyroAvailable)
+
+  controlManager.addPlugin(firstPersonPlugin)
+  gyroscopePlugin.inertiaFactor = 0.7
+  firstPersonPlugin.inertiaFactor = 0.3
+  firstPersonPlugin.rotateSpeed = 0.4
+
+  return controlManager
+}
 
 const addGridHelper = false;
 
@@ -8,7 +33,9 @@ export default class CustomScene extends Scene {
   private rooms: Room[] = []
   public camera: PerspectiveCamera
   public renderer: WebGLRenderer
-  public orbitals: OrbitControls
+  // public orbitals: OrbitControls
+
+  private controlManager: ControlManager
 
   width = window.innerWidth
   height = window.innerHeight
@@ -16,10 +43,10 @@ export default class CustomScene extends Scene {
   constructor() {
     super()
 
-    const cameraPos = 2
+    const cameraPos = 2.5
 
     this.camera = new PerspectiveCamera(70, this.width / this.height, .1, 1000)
-    this.camera.position.set(cameraPos, cameraPos, cameraPos)
+    this.camera.position.set(1, 1, cameraPos)
 
     this.renderer = new WebGLRenderer({
       canvas: document.getElementById("app") as HTMLCanvasElement,
@@ -37,11 +64,8 @@ export default class CustomScene extends Scene {
     const target = new Object3D()
     target.position.set(cameraPos, cameraPos, cameraPos)
     // sets up the camera's orbital controls
-    this.orbitals = new OrbitControls(this.camera, this.renderer.domElement)
-    // this.orbitals.target = new Vector3(cameraPos - 0.01, cameraPos, cameraPos - 0.01)
-    this.orbitals.target = new Vector3(0, 0, 0)
-    this.orbitals.enableDamping = true
-    this.orbitals.dampingFactor = 0.1
+
+    this.controlManager = setupControlManager(this.camera, this.renderer.domElement)
 
     if (addGridHelper) {
       this.add(new GridHelper(10, 10, 'red'))
@@ -56,7 +80,8 @@ export default class CustomScene extends Scene {
   }
 
   public update(delta: number) {
-    this.orbitals.update()
+    // this.orbitals.update()
+    this.controlManager.update()
     this.rooms.forEach(room => room.update(delta))
   }
 

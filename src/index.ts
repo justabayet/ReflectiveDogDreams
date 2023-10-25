@@ -3,7 +3,7 @@ import Stats from 'three/examples/jsm/libs/stats.module'
 
 export const scene = new CustomScene()
 
-const debug = true
+const debug = false
 
 const stats = new Stats()
 if (debug) {
@@ -24,7 +24,7 @@ function loop(time: number) {
   scene.update(delta)
   scene.camera.updateProjectionMatrix()
   scene.renderer.render(scene, scene.camera)
-  scene.orbitals.update()
+  // scene.orbitals.update()
   requestAnimationFrame(loop)
 }
 

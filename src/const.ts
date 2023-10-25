@@ -2,7 +2,7 @@ import { VideoTexture } from "three"
 
 const videosTexture: VideoTexture[] = []
 
-for(let i = 1; i <= 5; i++) {
+for(let i = 1; i <= 10; i++) {
   const video = document.getElementById( `video${i}` ) as HTMLVideoElement
   video.play()
   const videoTexture = new VideoTexture( video )

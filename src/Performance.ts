@@ -1,12 +1,14 @@
 import { Updatable } from "./interfaces"
 
 const ITERATION: number = 120
+const ITERATION_BASELINE: number = 100
 
 export default class Performance implements Updatable {
   private counter: number = 0
   private bestFps: number = 0
 
   private values: number[] = []
+  private baseLineValues: number[] = []
 
   public isSettled: boolean = false
 
@@ -14,10 +16,12 @@ export default class Performance implements Updatable {
     const fps = 1000 / delta
     this.counter++
 
-    if(this.counter <= 10) {
+    if(this.counter <= ITERATION_BASELINE) {
       // Compute best fps
-      if(fps > this.bestFps) {
-        this.bestFps = fps
+      this.baseLineValues.push(fps)
+
+      if(this.counter === ITERATION_BASELINE) {
+        this.bestFps = getMedian(this.baseLineValues)
       }
 
     } else {
